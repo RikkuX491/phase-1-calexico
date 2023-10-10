@@ -1,12 +1,17 @@
 // Write your code here...
 
+let currentMenuItems
+let currentlyDisplayedMenuItem
+
 fetch('http://localhost:3000/menu')
 .then(response => response.json())
 .then(menuItems => {
 
-    displayMenuItemDetails(menuItems[0])
+    currentMenuItems = menuItems
 
-    menuItems.forEach(menuItem => {
+    displayMenuItemDetails(currentMenuItems[0])
+
+    currentMenuItems.forEach(menuItem => {
         addMenuItemToMenu(menuItem)
     })
 })
@@ -26,15 +31,20 @@ function addMenuItemToMenu(menuItem){
 
 // Challenge #2
 function displayMenuItemDetails(menuItem){
+
+    currentlyDisplayedMenuItem = menuItem
+
     const dishImageElement = document.getElementById('dish-image')
     const dishNameElement = document.getElementById('dish-name')
     const dishDescriptionElement = document.getElementById('dish-description')
     const dishPrice = document.getElementById('dish-price')
+    const numberInCartSpanElement = document.getElementById('number-in-cart')
 
     dishImageElement.src = menuItem.image
     dishNameElement.textContent = menuItem.name
     dishDescriptionElement.textContent = menuItem.description
     dishPrice.textContent = menuItem.price
+    numberInCartSpanElement.textContent = menuItem.number_in_bag
 }
 
 // Challenge #4
@@ -45,4 +55,21 @@ cartForm.addEventListener('submit', (event) => {
     const numberInCartSpanElement = document.getElementById('number-in-cart')
     const sum = Number(cartAmountInputElement.value) + Number(numberInCartSpanElement.textContent)
     numberInCartSpanElement.textContent = sum
+
+    // Bonus Challenge #1
+    const menuItemsDiv = document.getElementById('menu-items')
+    
+    currentMenuItems = currentMenuItems.map(menuItem => {
+        if(menuItem.id === currentlyDisplayedMenuItem.id){
+            return {...menuItem, number_in_bag: sum}
+        }
+        else{
+            return menuItem
+        }
+    })
+    
+    menuItemsDiv.innerHTML = ""
+    currentMenuItems.forEach(menuItem => {
+        addMenuItemToMenu(menuItem)
+    })
 })
